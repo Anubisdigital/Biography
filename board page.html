@@ -1,0 +1,119 @@
+ <!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Board of learders</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 30px;
+      line-height: 1.6;
+      background-color: #e8f5e9;
+      color: #1b5e20;
+    }
+    .leaderboard-container {
+      max-width: 600px;
+      margin: auto;
+      padding: 20px;
+      background-color: #f1f8e9;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    h1 {
+      text-align: center;
+      color: #388e3c;
+    }
+    .leaderboard-list {
+      list-style-type: none;
+      padding: 0;
+    }
+    .leaderboard-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 15px;
+      margin-bottom: 8px;
+      background-color: #c8e6c9;
+      border-radius: 8px;
+      font-weight: bold;
+    }
+    .leaderboard-item:first-child {
+      background-color: #a5d6a7;
+      color: #1b5e20;
+    }
+    .leaderboard-item .rank {
+      width: 40px;
+      text-align: center;
+    }
+    .leaderboard-item .name {
+      flex-grow: 1;
+    }
+    .leaderboard-item .score-time {
+      text-align: right;
+    }
+    .star {
+      color: gold;
+      font-size: 1.5em;
+      margin-left: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="leaderboard-container">
+  <h1>🏆 Leaderboard 🏆</h1>
+  <ul id="leaderboard-list" class="leaderboard-list">
+    </ul>
+  <button onclick="location.href='questions.html'" style="border: solid green 2px; color:gray;background-color:green;border-radius:20px 20px 20px 20px;">Back to exam</button>
+</div>
+
+<script>
+  function renderLeaderboard() {
+    const listElement = document.getElementById('leaderboard-list');
+    listElement.innerHTML = ''; // Clear existing list
+
+    // Retrieve and parse scores from localStorage
+    let scores = JSON.parse(localStorage.getItem('quizScores')) || [];
+
+    // Sort the scores: first by score (desc), then by time (asc)
+    scores.sort((a, b) => {
+      if (b.score !== a.score) {
+        return b.score - a.score; // Higher score first
+      }
+      return a.time - b.time; // Lower time first
+    });
+
+    // Generate and display list items
+    scores.forEach((player, index) => {
+      const listItem = document.createElement('li');
+      listItem.className = 'leaderboard-item';
+
+      const rank = index + 1;
+      const star = rank === 1 ? '<span class="star">⭐</span>' : '';
+      const timeInMinutes = (player.time / 60000).toFixed(2);
+
+      listItem.innerHTML = `
+        <span class="rank">${rank}.</span>
+        <span class="name">${player.name}</span>
+        <span class="score-time">${player.score} points, ${timeInMinutes} min</span>
+        ${star}
+      `;
+      listElement.appendChild(listItem);
+    });
+  }
+
+  // Add a placeholder function to save the score and time
+  // This would need to be called on your original quiz page when the quiz ends.
+  function saveScore(name, score, time) {
+    let scores = JSON.parse(localStorage.getItem('quizScores')) || [];
+    scores.push({ name: name, score: score, time: time });
+    localStorage.setItem('quizScores', JSON.stringify(scores));
+  }
+
+  // Call the render function when the page loads
+  renderLeaderboard();
+</script>
+
+</body>
+</html>
